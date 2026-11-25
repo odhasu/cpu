@@ -69,9 +69,9 @@ function drawSides(ctx) {
   trace(ctx, [[39, 42], [461, 42]], '#696a773a');
 
   const accent = gradient(ctx, 291, 18, 448, 18, [
-    [0, '#672b21'], [.26, '#df583f'], [.84, '#ff8962'], [1, '#f45136'],
+    [0, '#384c1d'], [.26, '#a6ce44'], [.84, '#dcff73'], [1, '#9fc93a'],
   ]);
-  ctx.shadowColor = '#ff593b';
+  ctx.shadowColor = '#c8f35a';
   ctx.shadowBlur = 9;
   trace(ctx, [[291, 38], [439, 38], [447, 32]], accent, 1.7);
   ctx.restore();

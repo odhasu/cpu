@@ -30,10 +30,6 @@ export function icon(name, className = '') {
   return `<svg class="icon ${className}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[name] ?? icons.layers}</svg>`;
 }
 
-export function mark(className = '') {
-  return `<svg class="brand-mark ${className}" viewBox="0 0 72 72" fill="none" aria-hidden="true"><g transform="translate(3 4)"><path fill="currentColor" d="M4 60V17L17 4H38C50.15 4 60 13.85 60 26C60 33.8 56.25 40.7 50.85 44.65L40.55 34.35C43.8 33.3 46 30.05 46 26C46 21.58 42.42 18 38 18H23L18 23V60Z"/><path class="brand-slash" d="M23 34H36L62 60H49Z"/></g></svg>`;
-}
-
 export function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, (character) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
@@ -75,7 +71,7 @@ export function modelCard(model, { urls, formatRate }) {
       ${providerMark(model.provider)}
       <span class="category-chip" data-kind="${model.kind}">${outputIcon(model.kind)} ${model.kind}</span>
     </div>
-    <div class="model-card-text"><h3>${model.name}</h3><span>${model.provider}</span></div>
+    <div class="model-card-text"><h3>${model.name}</h3><span>${model.provider} · ${model.kind}</span></div>
     <p>${model.description}</p>
     <div class="model-card-bottom"><span><strong>${rate}</strong> ${suffix}</span>${icon('upRight')}</div>
   </a>`;

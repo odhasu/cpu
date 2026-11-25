@@ -1,6 +1,6 @@
 .rp-gpu {
-  --gpu-rule: var(--line, #2a2b30);
-  --gpu-panel: #111216;
+  --gpu-rule: var(--line, #20282a);
+  --gpu-panel: #0a1012;
   padding-bottom: clamp(64px, 9vw, 124px);
 }
 
@@ -8,7 +8,7 @@
   position: relative;
   overflow: hidden;
   border-bottom: 1px solid var(--gpu-rule);
-  background: #0d0e10;
+  background: #080d0f;
 }
 
 .rp-gpu-hero__inner {
@@ -36,7 +36,7 @@
 .rp-gpu-hero__copy > p:first-of-type {
   max-width: min(360px, 39vw);
   margin-top: 24px;
-  color: #c1c0c4;
+  color: #c3cbca;
   font-size: clamp(16px, 1.45vw, 18px);
 }
 
@@ -53,7 +53,7 @@
 }
 
 .rp-gpu-hero__estimate {
-  background: #17181c;
+  background: #11191a;
 }
 
 .rp-gpu-hero__status {
@@ -71,7 +71,7 @@
   aspect-ratio: 84 / 51;
   transform: translateY(-50%);
   background:
-    radial-gradient(ellipse 53% 49% at 55% 50%, #2b2220 0%, #191c23 38%, transparent 100%);
+    radial-gradient(ellipse 53% 49% at 55% 50%, #1c2820 0%, #131c1b 38%, transparent 100%);
 }
 
 .rp-gpu-hero__stage::before {
@@ -145,8 +145,8 @@
 }
 
 .rp-gpu-card[aria-pressed='true'] {
-  border-color: #995041;
-  background: #1a1516;
+  border-color: #718b3c;
+  background: #172016;
 }
 
 .rp-gpu-card__name {
@@ -258,7 +258,7 @@
   padding: 8px 11px;
   border: 1px solid #61636d;
   border-radius: 3px;
-  background: #0d0e11;
+  background: #080d0f;
   color: var(--text);
   font-size: 16px;
 }
@@ -276,7 +276,7 @@
   align-content: start;
   justify-items: start;
   border-left: 1px solid var(--gpu-rule);
-  background: linear-gradient(136deg, #211819, #171619 74%);
+  background: linear-gradient(136deg, #182119, #101817 74%);
 }
 
 .rp-gpu-config__total-label {
@@ -316,9 +316,9 @@
 }
 
 .rp-gpu-config__download:disabled {
-  border-color: #43332f;
-  background: #2d2424;
-  color: #c0b2ad;
+  border-color: #414b3d;
+  background: #20291f;
+  color: #a8b1a4;
 }
 
 .rp-gpu-config__feedback {

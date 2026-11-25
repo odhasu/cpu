@@ -1,4 +1,5 @@
-import { icon, mark, modelUrl, outputIcon, providerMark } from './ui.js';
+import brandMark from './assets/renderport-mark.png';
+import { icon, modelUrl, outputIcon, providerMark } from './ui.js';
 
 const nav = [
   ['models', 'Models'],
@@ -14,7 +15,7 @@ function navLinks(page, urls) {
 }
 
 function brand(urls) {
-  return `<a class="site-brand" href="${urls.home}" aria-label="RenderPort home">${mark()}<span>RenderPort</span></a>`;
+  return `<a class="site-brand" href="${urls.home}" aria-label="RenderPort home"><img class="brand-mark" src="${brandMark}" alt=""><span>RenderPort</span></a>`;
 }
 
 export function header(page, { urls }) {
@@ -22,12 +23,12 @@ export function header(page, { urls }) {
     <header class="site-header">
       <div class="site-header-inner shell">
         ${brand(urls)}
-        <nav class="site-nav" aria-label="Main navigation">${navLinks(page, urls)}</nav>
         <div class="site-tools">
           <button class="site-search" type="button" data-search aria-label="Search RenderPort">
             ${icon('search')} <span>Search</span><kbd>${icon('command')} K</kbd>
           </button>
-          <a class="button header-playground" href="${urls.playground}">Playground ${icon('upRight')}</a>
+          <nav class="site-nav" aria-label="Main navigation">${navLinks(page, urls)}</nav>
+          <a class="button button--primary header-playground" href="${urls.playground}">Playground</a>
           <button type="button" class="menu-toggle button" aria-controls="mobile-navigation" aria-expanded="false" aria-label="Open navigation">${icon('menu')}</button>
         </div>
       </div>
