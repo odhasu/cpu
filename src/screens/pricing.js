@@ -1,4 +1,3 @@
-import './pricing.css';
 
 const ALL = 'All';
 const DEFAULT_USAGE = { units: 10, input: 1, output: 0.25 };
@@ -174,6 +173,7 @@ export function render(context) {
 }
 
 export function mount(root, context) {
+  const { listen } = context;
   const { formatRate, modelCatalog } = context;
   const search = root.querySelector('#pricing-search');
   const filters = [...root.querySelectorAll('[data-pricing-category]')];
@@ -204,11 +204,11 @@ export function mount(root, context) {
     filterModels();
   }
 
-  search.addEventListener('input', filterModels);
+  listen(search, 'input', filterModels);
   for (const button of filters) {
-    button.addEventListener('click', () => setCategory(button.dataset.pricingCategory));
+    listen(button, 'click', () => setCategory(button.dataset.pricingCategory));
   }
-  root.querySelector('#pricing-reset').addEventListener('click', () => {
+  listen(root.querySelector('#pricing-reset'), 'click', () => {
     search.value = '';
     setCategory(ALL);
     search.focus();
@@ -253,10 +253,10 @@ export function mount(root, context) {
     updateEstimate();
   }
 
-  form.addEventListener('submit', (event) => event.preventDefault());
-  modelSelect.addEventListener('change', selectModel);
+  listen(form, 'submit', (event) => event.preventDefault());
+  listen(modelSelect, 'change', selectModel);
   for (const field of [units, input, output]) {
-    field.addEventListener('input', updateEstimate);
+    listen(field, 'input', updateEstimate);
   }
   selectModel();
 }

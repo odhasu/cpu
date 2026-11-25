@@ -176,7 +176,7 @@ a, button { -webkit-tap-highlight-color: transparent; }
 .mobile-navigation a .icon { color: var(--accent); }
 
 .site-footer { padding: 49px 0 22px; background: #0c100e; }
-body:not([data-page="home"]) .site-footer { border-top: 1px solid var(--line); }
+body:not(:has(main[data-page="home"])) .site-footer { border-top: 1px solid var(--line); }
 .site-footer-close {
   display: flex;
   align-items: center;

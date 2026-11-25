@@ -1,7 +1,6 @@
-import './home.css';
 import { quickstart, quickstartLanguages, requestFor } from '../data/requests.js';
 import { copyText, escapeHtml, icon, modelUrl, outputIcon, providerMark } from '../ui.js';
-import brandMark from '../assets/blinkrouter-mark.png';
+import { sitePath } from '../site.js';
 import { mountVisual } from './home-visual.js';
 
 const popularProviders = ['OpenAI', 'Anthropic', 'Google', 'ByteDance', 'ElevenLabs'];
@@ -32,7 +31,7 @@ function routingPreview(routes, urls) {
       <canvas aria-hidden="true"></canvas>
       <div class="routing-source" data-routing-source aria-hidden="true">${icon('terminal')}<span>Request</span></div>
       <div class="routing-hub" data-routing-hub aria-hidden="true">
-        <div class="routing-hub-chip"><img src="${brandMark}" width="256" height="256" alt="" fetchpriority="high"></div>
+        <div class="routing-hub-chip"><img src="${sitePath('/blinkrouter-mark.png')}" width="256" height="256" alt="" fetchpriority="high"></div>
       </div>
       <div class="routing-targets" role="group" aria-label="Choose an output to preview">
         ${routes.map((model, index) => `<button type="button" class="routing-target" data-route-kind="${model.kind}" aria-pressed="${index === 0}">${outputIcon(model.kind)}<span>${model.kind}</span><i></i></button>`).join('')}
@@ -156,13 +155,14 @@ export function render(context) {
 }
 
 export function mount(root, context) {
+  const { listen, signal } = context;
   const filters = root.querySelectorAll('[data-home-kind]');
   const grid = root.querySelector('[data-featured-models]');
   const status = root.querySelector('[data-featured-status]');
   const catalogLink = root.querySelector('[data-catalog-link]');
 
   for (const button of filters) {
-    button.addEventListener('click', () => {
+    listen(button, 'click', () => {
       if (button.getAttribute('aria-pressed') === 'true') return;
       const category = button.dataset.homeKind;
       for (const filter of filters) filter.setAttribute('aria-pressed', String(filter === button));
@@ -185,7 +185,7 @@ export function mount(root, context) {
   let copyFeedbackTimer;
 
   for (const button of languages) {
-    button.addEventListener('click', () => {
+    listen(button, 'click', () => {
       language = button.dataset.homeLanguage;
       for (const tab of languages) tab.setAttribute('aria-pressed', String(tab === button));
       code.innerHTML = codeLines(language);
@@ -196,7 +196,7 @@ export function mount(root, context) {
     });
   }
 
-  copyButton.addEventListener('click', async () => {
+  listen(copyButton, 'click', async () => {
     const copied = await copyText(copyButton, quickstart(language));
     window.clearTimeout(copyFeedbackTimer);
     copyStatus.textContent = copied ? 'Example copied.' : 'Copy unavailable. Select the code to copy it.';
@@ -205,18 +205,20 @@ export function mount(root, context) {
 
   mountVisual(root, context);
 
-  const tasteAssets = new URL('taste/', document.baseURI);
-  import(/* @vite-ignore */ new URL('motion.js', tasteAssets).href).catch(() => {});
-  import(/* @vite-ignore */ new URL('moments/moments.js', tasteAssets).href).then(({ ready }) => {
+  const tasteAssets = new URL(sitePath('/taste/'), window.location.origin);
+  import(/* webpackIgnore: true */ /* turbopackIgnore: true */ new URL('motion.js', tasteAssets).href).catch(() => {});
+  import(/* webpackIgnore: true */ /* turbopackIgnore: true */ new URL('moments/moments.js', tasteAssets).href).then(({ ready }) => {
+    if (signal.aborted) return;
     const tools = root.querySelector('[data-moment="iris-opens"]');
     const keepVisible = () => {
       tools.__moment?.destroy?.();
       delete tools.__moment;
     };
-    tools.addEventListener('focusin', keepVisible, { once: true });
-    window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', ({ matches }) => {
+    listen(tools, 'focusin', keepVisible, { once: true });
+    listen(window.matchMedia('(prefers-reduced-motion: reduce)'), 'change', ({ matches }) => {
       if (matches) keepVisible();
     });
     return ready.then(() => { if (tools.matches(':focus-within')) keepVisible(); });
   }).catch(() => {});
+  signal.addEventListener('abort', () => window.clearTimeout(copyFeedbackTimer), { once: true });
 }

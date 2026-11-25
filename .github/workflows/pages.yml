@@ -1,4 +1,4 @@
-name: Deploy RenderPort to GitHub Pages
+name: Deploy Blinkrouter to GitHub Pages
 
 on:
   push:
@@ -24,11 +24,14 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run build
       - uses: actions/configure-pages@v5
+        id: pages
+      - run: npm run build
+        env:
+          NEXT_PUBLIC_BASE_PATH: ${{ steps.pages.outputs.base_path }}
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: out
 
   deploy:
     environment:

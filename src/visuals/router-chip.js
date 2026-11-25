@@ -161,10 +161,23 @@ export function mountRouterChip(chip, canvas, context, motion) {
     shaderFailed = false;
     resize();
   });
-  new ResizeObserver(resize).observe(chip);
+  const sizeObserver = new ResizeObserver(resize);
+  sizeObserver.observe(chip);
   resize();
 
   return {
+    dispose() {
+      visible = false;
+      cancelAnimationFrame(frame);
+      sizeObserver.disconnect();
+      model.traverse((object) => {
+        object.geometry?.dispose();
+        object.material?.dispose();
+      });
+      renderer.dispose();
+      canvas.remove();
+      delete chip.dataset.chipRendered;
+    },
     setPointer(x, y) {
       pointerX = x;
       pointerY = y;

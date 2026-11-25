@@ -1,82 +1,10 @@
-import brandMark from './assets/blinkrouter-mark.png';
 import { icon, modelUrl, outputIcon, providerMark } from './ui.js';
 
-const nav = [
-  ['models', 'Models'],
-  ['pricing', 'Pricing'],
-  ['gpu', 'GPU Cloud'],
-  ['docs', 'Docs'],
-];
+export function mountChrome(root, { urls, modelCatalog, listen }) {
+  if (/Mac|iPhone|iPad/.test(navigator.platform)) {
+    root.querySelector('.site-search-control kbd').innerHTML = `${icon('command')} K`;
+  }
 
-function navLinks(page, urls) {
-  return nav.map(([key, label]) => (
-    `<a href="${urls[key]}"${page === key ? ' aria-current="page"' : ''}>${label}</a>`
-  )).join('');
-}
-
-function brand(urls) {
-  return `<a class="site-brand" href="${urls.home}" aria-label="Blinkrouter home"><img class="brand-mark" src="${brandMark}" alt=""><span>Blinkrouter</span></a>`;
-}
-
-export function header(page, { urls }) {
-  const appleKeyboard = /Mac|iPhone|iPad/.test(navigator.platform);
-  return `<header class="site-header nav">
-      <a class="skip-link" href="#main-content">Skip to content</a>
-      <div class="site-header-inner shell wrap">
-        <div class="site-header-links">
-          ${brand(urls)}
-          <nav class="site-nav" aria-label="Main navigation">${navLinks(page, urls)}</nav>
-        </div>
-        <div class="site-tools">
-          <div class="site-search-control">
-            <button class="site-search" type="button" data-search aria-label="Search Blinkrouter" aria-keyshortcuts="Meta+K Control+K" aria-haspopup="dialog" aria-expanded="false">
-              ${icon('search')} <span>Search</span>
-            </button>
-            <kbd aria-hidden="true">${appleKeyboard ? icon('command') : 'Ctrl'} K</kbd>
-          </div>
-          <a class="button header-playground" href="${urls.playground}">Playground ${icon('upRight')}</a>
-          <button type="button" class="menu-toggle button" aria-controls="mobile-navigation" aria-expanded="false" aria-label="Open navigation">${icon('menu')}</button>
-        </div>
-      </div>
-      <nav class="mobile-navigation shell" id="mobile-navigation" aria-label="Mobile navigation" hidden>
-        ${navLinks(page, urls)}
-        <a href="${urls.playground}">Playground ${icon('upRight')}</a>
-      </nav>
-    </header>`;
-}
-
-export function footer({ urls }, page) {
-  return `<footer class="site-footer closing">
-    <div class="shell wrap">
-      ${page === 'home' ? `<div class="site-footer-close">
-        <h2>API playground</h2>
-        <a class="button btn btn--primary button--primary" href="${urls.playground}">Try an API request ${icon('arrow')}</a>
-      </div>` : ''}
-      <div>
-      <div class="site-footer-main">
-        <div>${brand(urls)}<p>One port for AI models and cloud compute.</p></div>
-        <nav class="footer-link-group" aria-label="Product"><p class="footer-group-title">Product</p>${navLinks('', urls)}</nav>
-        <nav class="footer-link-group" aria-label="Developers"><p class="footer-group-title">Developers</p><a href="${urls.quickstart}">API quickstart</a><a href="${urls.playground}">API playground</a><a href="${urls.github}">${icon('github')} GitHub ${icon('upRight')}</a></nav>
-      </div>
-      <div class="site-footer-bottom"><span>© ${new Date().getFullYear()} Blinkrouter</span><span><i></i> Product preview</span></div>
-      </div>
-    </div>
-  </footer>`;
-}
-
-export function searchDialog() {
-  return `<dialog class="search-dialog" aria-labelledby="search-heading">
-    <div class="search-dialog-input">
-      ${icon('search')}
-      <label for="site-search-query" id="search-heading" class="sr-only">Search models and pages</label>
-      <input type="search" id="site-search-query" placeholder="Search models and pages" autocomplete="off" autofocus>
-      <button type="button" class="search-close" aria-label="Close search">${icon('close')}</button>
-    </div>
-    <div class="search-results"></div>
-  </dialog>`;
-}
-
-export function mountChrome(root, { urls, modelCatalog }) {
   const menuToggle = root.querySelector('.menu-toggle');
   const mobileNavigation = root.querySelector('#mobile-navigation');
   const closeMenu = () => {
@@ -86,7 +14,7 @@ export function mountChrome(root, { urls, modelCatalog }) {
     menuToggle.innerHTML = icon('menu');
   };
 
-  menuToggle.addEventListener('click', () => {
+  listen(menuToggle, 'click', () => {
     if (!mobileNavigation.hidden) {
       closeMenu();
       return;
@@ -97,10 +25,10 @@ export function mountChrome(root, { urls, modelCatalog }) {
     menuToggle.innerHTML = icon('close');
   });
 
-  mobileNavigation.addEventListener('click', (event) => {
+  listen(mobileNavigation, 'click', (event) => {
     if (event.target.closest('a')) closeMenu();
   });
-  window.matchMedia('(max-width: 720px)').addEventListener('change', (event) => {
+  listen(window.matchMedia('(max-width: 720px)'), 'change', (event) => {
     if (!event.matches) closeMenu();
   });
 
@@ -143,15 +71,15 @@ export function mountChrome(root, { urls, modelCatalog }) {
     input.focus();
   }
 
-  searchButton.addEventListener('click', openSearch);
-  dialog.addEventListener('close', () => searchButton.setAttribute('aria-expanded', 'false'));
-  dialog.querySelector('.search-close').addEventListener('click', () => dialog.close());
-  dialog.addEventListener('click', (event) => {
+  listen(searchButton, 'click', openSearch);
+  listen(dialog, 'close', () => searchButton.setAttribute('aria-expanded', 'false'));
+  listen(dialog.querySelector('.search-close'), 'click', () => dialog.close());
+  listen(dialog, 'click', (event) => {
     if (event.target === dialog || event.target.closest('a')) dialog.close();
   });
-  input.addEventListener('input', updateSearch);
+  listen(input, 'input', updateSearch);
 
-  dialog.addEventListener('keydown', (event) => {
+  listen(dialog, 'keydown', (event) => {
     if (event.key === 'Escape') {
       event.preventDefault();
       dialog.close();
@@ -171,7 +99,7 @@ export function mountChrome(root, { urls, modelCatalog }) {
     }
   });
 
-  document.addEventListener('keydown', (event) => {
+  listen(document, 'keydown', (event) => {
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
       event.preventDefault();
       openSearch();

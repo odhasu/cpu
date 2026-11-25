@@ -1,4 +1,3 @@
-import './gpu.css';
 import { drawGpu } from '../assets/gpu/hardware.js';
 import { icon } from '../ui.js';
 
@@ -57,7 +56,7 @@ function interactiveChat() {
   </div>`;
 }
 
-export function render({ formatRate }) {
+export function render({ formatRate, urls }) {
   const defaultRate = hardware[0].cents / 100;
   return `<div class="rp-gpu">
     <section class="rp-gpu-hero" data-reveal aria-labelledby="gpu-title">
@@ -89,7 +88,7 @@ export function render({ formatRate }) {
     </section>
 
     <section class="shell rp-gpu-learn" data-reveal aria-labelledby="gpu-learn-title">
-      <div class="rp-gpu-instances__heading"><div><p class="rp-gpu-eyebrow">Learn</p><h2 id="gpu-learn-title">How to use Blinkrouter GPU</h2></div><a class="inline-link" href="${location.pathname}">See all ${icon('arrow')}</a></div>
+      <div class="rp-gpu-instances__heading"><div><p class="rp-gpu-eyebrow">Learn</p><h2 id="gpu-learn-title">How to use Blinkrouter GPU</h2></div><a class="inline-link" href="${urls.gpu}">See all ${icon('arrow')}</a></div>
       <div class="rp-gpu-tutorials">${tutorials.map(([title, kind, app], index) => `<button class="rp-gpu-tutorial" type="button" data-tutorial="${title}"><span class="rp-gpu-tutorial__art" data-art="${index % 3}"><i></i><b></b></span><strong>${title}</strong><small>${kind} · ${app}</small></button>`).join('')}</div>
     </section>
 
@@ -113,7 +112,7 @@ export function render({ formatRate }) {
   </div>`;
 }
 
-export function mount(root, { formatRate }) {
+export function mount(root, { formatRate, listen }) {
   const config = root.querySelector('#gpu-config');
   const form = config.querySelector('[data-gpu-form]');
   const { model, count, hours } = form.elements;
@@ -161,15 +160,15 @@ export function mount(root, { formatRate }) {
     }
   };
 
-  for (const card of cards) card.addEventListener('click', () => {
+  for (const card of cards) listen(card, 'click', () => {
     model.value = card.dataset.gpuModel;
     updateEstimate();
     const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
     config.scrollIntoView({ block: 'start', behavior });
   });
 
-  form.addEventListener('input', updateEstimate);
-  form.addEventListener('submit', (event) => {
+  listen(form, 'input', updateEstimate);
+  listen(form, 'submit', (event) => {
     event.preventDefault();
     const configuration = updateEstimate();
     if (!configuration) return;
@@ -185,7 +184,7 @@ export function mount(root, { formatRate }) {
   });
 
   for (const button of root.querySelectorAll('[data-gpu-view]')) {
-    button.addEventListener('click', () => {
+    listen(button, 'click', () => {
       const isComputers = button.dataset.gpuView === 'computers';
       root.querySelectorAll('[data-gpu-view]').forEach((item) => item.setAttribute('aria-selected', String(item === button)));
       root.querySelector('#gpu-panel-explore').hidden = isComputers;
@@ -194,7 +193,7 @@ export function mount(root, { formatRate }) {
   }
 
   for (const button of root.querySelectorAll('[data-preset]')) {
-    button.addEventListener('click', () => {
+    listen(button, 'click', () => {
       const isArtcraft = button.dataset.preset === 'artcraft';
       root.querySelectorAll('[data-preset]').forEach((item) => item.setAttribute('aria-selected', String(item === button)));
       root.querySelector('#preset-panel-blender').hidden = isArtcraft;
@@ -203,7 +202,7 @@ export function mount(root, { formatRate }) {
   }
 
   for (const button of root.querySelectorAll('[data-preview-action]')) {
-    button.addEventListener('click', () => {
+    listen(button, 'click', () => {
       const message = {
         claude: 'Claude MCP is shown as a connection preview; no external integration was started.',
         lora: 'Custom LoRA import is shown as a preview; no file was uploaded.',
@@ -214,7 +213,7 @@ export function mount(root, { formatRate }) {
   }
 
   for (const button of root.querySelectorAll('[data-lora]')) {
-    button.addEventListener('click', () => {
+    listen(button, 'click', () => {
       model.value = hardware[0].id;
       updateEstimate();
       showPreview(`${button.dataset.lora} selected for a GPU workflow preview.`);
@@ -222,7 +221,7 @@ export function mount(root, { formatRate }) {
   }
 
   for (const button of root.querySelectorAll('[data-tutorial], [data-workflow]')) {
-    button.addEventListener('click', () => showPreview(`${button.dataset.tutorial ?? button.dataset.workflow} is available as a workflow preview.`));
+    listen(button, 'click', () => showPreview(`${button.dataset.tutorial ?? button.dataset.workflow} is available as a workflow preview.`));
   }
 
   updateEstimate();

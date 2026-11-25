@@ -8,10 +8,12 @@ Use Node.js 22.12 or later.
 
 ```sh
 npm ci
-npm run dev
+npm run dev -- --hostname 127.0.0.1 --port 4175
 ```
 
-Use `npm run build` to generate the static site in `dist/`. GitHub Pages can publish the generated output. Relative assets keep project-path hosting working.
+Blinkrouter uses the Next.js App Router. Use `npm run build` to export the five pages to `out/`, then `npm run preview -- --port 4175` to serve a root-path export locally.
+
+The GitHub Pages workflow reads the site's base path from Pages and sets `NEXT_PUBLIC_BASE_PATH` before the build. To reproduce the project-path export, run `NEXT_PUBLIC_BASE_PATH=/cpu npm run build` and serve `out/` at `/cpu/`.
 
 ## Motion
 

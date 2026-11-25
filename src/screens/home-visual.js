@@ -8,7 +8,7 @@ function bezierPoint([start, a, b, end], t) {
   };
 }
 
-export function mountVisual(root, { modelCatalog, urls }) {
+export function mountVisual(root, { modelCatalog, urls, listen, signal }) {
   const stage = root.querySelector('[data-routing-stage]');
   const source = stage.querySelector('[data-routing-source]');
   const chip = stage.querySelector('.routing-hub-chip');
@@ -39,6 +39,7 @@ export function mountVisual(root, { modelCatalog, urls }) {
       });
       if (!context) return;
       const { mountRouterChip } = await import('../visuals/router-chip.js');
+      if (signal.aborted) return;
       chipScene = mountRouterChip(chip, surface, context, motion);
       chipScene.setVisible(visible);
     } catch {
@@ -138,7 +139,7 @@ export function mountVisual(root, { modelCatalog, urls }) {
   }
 
   targets.forEach((button, index) => {
-    button.addEventListener('click', () => {
+    listen(button, 'click', () => {
       const model = modelCatalog.find((entry) => entry.kind === button.dataset.routeKind);
       active = index;
       targets.forEach((target) => target.setAttribute('aria-pressed', String(target === button)));
@@ -150,8 +151,8 @@ export function mountVisual(root, { modelCatalog, urls }) {
     });
   });
 
-  replay.addEventListener('click', play);
-  chip.addEventListener('pointermove', (event) => {
+  listen(replay, 'click', play);
+  listen(chip, 'pointermove', (event) => {
     if (!chipScene || motion.matches || event.pointerType === 'touch') return;
     const box = chip.getBoundingClientRect();
     chipScene.setPointer(
@@ -159,8 +160,8 @@ export function mountVisual(root, { modelCatalog, urls }) {
       (event.clientY - box.top) / box.height * 2 - 1,
     );
   });
-  chip.addEventListener('pointerleave', () => chipScene?.setPointer(0, 0));
-  motion.addEventListener('change', () => {
+  listen(chip, 'pointerleave', () => chipScene?.setPointer(0, 0));
+  listen(motion, 'change', () => {
     cancelAnimationFrame(frame);
     paint();
     chipScene?.setSignal(0);
@@ -177,4 +178,10 @@ export function mountVisual(root, { modelCatalog, urls }) {
     loadChip();
   }, { threshold: [0, .4] });
   observer.observe(stage);
+  signal.addEventListener('abort', () => {
+    resize.disconnect();
+    observer.disconnect();
+    cancelAnimationFrame(frame);
+    chipScene?.dispose();
+  }, { once: true });
 }

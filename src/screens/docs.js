@@ -1,5 +1,4 @@
-import './docs.css';
-import { copyText, icon } from '../ui.js';
+import { copyText, escapeHtml, icon } from '../ui.js';
 import { quickstart, quickstartLanguages as languages, quickstartModelId as initialModelId, requestFor } from '../data/requests.js';
 
 const examplePath = 'https://gateway.example/v1';
@@ -81,7 +80,7 @@ export function render({ urls, modelCatalog }) {
               <div class="docs-languages" aria-label="Code language">${languages.map((language, index) => `<button type="button" aria-pressed="${index === 0}" data-language="${language}">${language}</button>`).join('')}</div>
               ${copyButton('copy-quickstart')}
             </div>
-            <pre tabindex="0" aria-label="Quickstart example"><code data-quickstart-code></code></pre>
+            <pre tabindex="0" aria-label="Quickstart example"><code data-quickstart-code>${escapeHtml(quickstart(languages[0]))}</code></pre>
           </div>
           <p class="docs-copy-message" data-docs-copy-status role="status"></p>
         </section>
@@ -134,20 +133,20 @@ export function render({ urls, modelCatalog }) {
   </section>`;
 }
 
-export function mount(root, { modelCatalog }) {
+export function mount(root, { modelCatalog, listen }) {
   const quickstartCode = root.querySelector('[data-quickstart-code]');
   const copyStatus = root.querySelector('[data-docs-copy-status]');
   const languageButtons = [...root.querySelectorAll('[data-language]')];
   quickstartCode.textContent = quickstart('cURL');
 
   function wireCopy(selector, code, status) {
-    root.querySelector(selector).addEventListener('click', async (event) => {
+    listen(root.querySelector(selector), 'click', async (event) => {
       const copied = await copyText(event.currentTarget, code.textContent);
       status.textContent = copied ? 'Copied to clipboard.' : 'Copy unavailable. Select the code to copy it.';
     });
   }
 
-  for (const button of languageButtons) button.addEventListener('click', () => {
+  for (const button of languageButtons) listen(button, 'click', () => {
     for (const item of languageButtons) item.setAttribute('aria-pressed', String(item === button));
     quickstartCode.textContent = quickstart(button.dataset.language);
     copyStatus.textContent = '';
@@ -207,13 +206,13 @@ export function mount(root, { modelCatalog }) {
     updateModel();
   }
 
-  modelSelect.addEventListener('change', updateModel);
-  promptField.addEventListener('input', updateRequest);
-  gatewayModel.addEventListener('input', updateRequest);
-  for (const radio of form.querySelectorAll('input[name="mode"]')) radio.addEventListener('change', updateMode);
+  listen(modelSelect, 'change', updateModel);
+  listen(promptField, 'input', updateRequest);
+  listen(gatewayModel, 'input', updateRequest);
+  for (const radio of form.querySelectorAll('input[name="mode"]')) listen(radio, 'change', updateMode);
   wireCopy('.copy-request', requestBody, feedback);
 
-  form.addEventListener('submit', async (event) => {
+  listen(form, 'submit', async (event) => {
     event.preventDefault();
     if (pending) return;
     if (!promptField.value.trim()) {

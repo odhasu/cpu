@@ -1,7 +1,7 @@
-import './models.css';
 import { icon, modelCard, outputIcon, providerMark, copyText } from '../ui.js';
 
-export function render({ urls, categories, modelCatalog }) {
+export function render(context) {
+  const { urls, categories, modelCatalog } = context;
   const providers = [...new Set(modelCatalog.map((model) => model.provider))].sort();
   return `<section class="catalog-shell shell">
     <div class="catalog-heading">
@@ -27,8 +27,8 @@ export function render({ urls, categories, modelCatalog }) {
         </label>
       </div>
     </div>
-    <div class="catalog-meta"><p data-model-count role="status"></p><a href="${urls.pricing}">Compare sample rates ${icon('arrow')}</a></div>
-    <div class="model-grid" data-model-grid></div>
+    <div class="catalog-meta"><p data-model-count role="status">${modelCatalog.length} models</p><a href="${urls.pricing}">Compare sample rates ${icon('arrow')}</a></div>
+    <div class="model-grid" data-model-grid>${modelCatalog.map((model) => modelCard(model, context)).join('')}</div>
     <div class="catalog-empty" hidden>
       ${icon('search')}
       <h2>No matching models</h2>
@@ -43,7 +43,7 @@ export function render({ urls, categories, modelCatalog }) {
 }
 
 export function mount(root, context) {
-  const { categories, modelCatalog, formatRate, urls } = context;
+  const { categories, modelCatalog, formatRate, urls, listen } = context;
   const query = root.querySelector('[data-model-query]');
   const provider = root.querySelector('[data-provider-filter]');
   const grid = root.querySelector('[data-model-grid]');
@@ -103,7 +103,7 @@ export function mount(root, context) {
       <dl class="model-rates">${pricing}<div><dt>Platform markup</dt><dd>0%</dd></div></dl>
       <p class="catalog-note">Sample rates in USD.</p>
       <div class="model-detail-actions"><a class="button button--primary" href="${playgroundLink}">Open playground ${icon('arrow')}</a><a class="button" href="${urls.pricing}">View pricing</a></div>`;
-    details.querySelector('[data-copy-model]').addEventListener('click', async (event) => {
+    listen(details.querySelector('[data-copy-model]'), 'click', async (event) => {
       const copied = await copyText(event.currentTarget, model.id);
       details.querySelector('[data-model-copy-status]').textContent = copied ? 'Model ID copied.' : 'Copy unavailable. Select the model ID to copy it.';
     });
@@ -111,13 +111,13 @@ export function mount(root, context) {
     dialog.showModal();
   }
 
-  for (const filter of filters) filter.addEventListener('click', () => {
+  for (const filter of filters) listen(filter, 'click', () => {
     kind = filter.dataset.kindFilter;
     applyFilters();
   });
-  query.addEventListener('input', applyFilters);
-  provider.addEventListener('change', applyFilters);
-  root.querySelector('[data-clear-models]').addEventListener('click', () => {
+  listen(query, 'input', applyFilters);
+  listen(provider, 'change', applyFilters);
+  listen(root.querySelector('[data-clear-models]'), 'click', () => {
     kind = 'All';
     query.value = '';
     provider.value = '';
@@ -125,7 +125,7 @@ export function mount(root, context) {
     query.focus();
   });
 
-  grid.addEventListener('click', (event) => {
+  listen(grid, 'click', (event) => {
     const link = event.target.closest('a');
     if (!link || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
     const modelId = new URL(link.href).searchParams.get('model');
@@ -134,9 +134,9 @@ export function mount(root, context) {
     showModel(modelId);
   });
 
-  dialog.querySelector('.model-dialog-close').addEventListener('click', () => dialog.close());
-  dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
-  dialog.addEventListener('close', () => updateLocation());
+  listen(dialog.querySelector('.model-dialog-close'), 'click', () => dialog.close());
+  listen(dialog, 'click', (event) => { if (event.target === dialog) dialog.close(); });
+  listen(dialog, 'close', () => updateLocation());
 
   updateCatalog();
   if (params.has('model')) showModel(params.get('model'));

@@ -1,8 +1,4 @@
-import byteDanceLogo from './assets/bytedance.svg';
-import anthropicLogo from './assets/providers/anthropic.svg';
-import elevenLabsLogo from './assets/providers/elevenlabs.svg';
-import googleLogo from './assets/providers/google.svg';
-import openAiLogo from './assets/providers/openai.svg';
+import { sitePath } from './site.js';
 
 const icons = {
   arrow: '<path d="M5 12h14m-6-6 6 6-6 6"/>',
@@ -33,8 +29,12 @@ const icons = {
   github: '<path d="M9 19c-4 1.3-4-2-6-2.5M15 22v-3.4a3 3 0 0 0-.8-2.4c2.7-.3 5.6-1.3 5.6-6A4.7 4.7 0 0 0 18.5 7a4.4 4.4 0 0 0-.1-3.3s-1-.3-3.4 1.3a12 12 0 0 0-6 0C6.6 3.4 5.6 3.7 5.6 3.7A4.4 4.4 0 0 0 5.5 7a4.7 4.7 0 0 0-1.3 3.2c0 4.7 2.9 5.7 5.6 6A3 3 0 0 0 9 18.6V22"/>',
 };
 
+export function iconBody(name) {
+  return icons[name] ?? icons.layers;
+}
+
 export function icon(name, className = '') {
-  return `<svg class="icon ${className}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[name] ?? icons.layers}</svg>`;
+  return `<svg class="icon ${className}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${iconBody(name)}</svg>`;
 }
 
 export function escapeHtml(value) {
@@ -62,11 +62,11 @@ const providers = {
 };
 
 const providerLogos = {
-  Anthropic: anthropicLogo,
-  ByteDance: byteDanceLogo,
-  ElevenLabs: elevenLabsLogo,
-  Google: googleLogo,
-  OpenAI: openAiLogo,
+  Anthropic: sitePath('/providers/anthropic.svg'),
+  ByteDance: sitePath('/providers/bytedance.svg'),
+  ElevenLabs: sitePath('/providers/elevenlabs.svg'),
+  Google: sitePath('/providers/google.svg'),
+  OpenAI: sitePath('/providers/openai.svg'),
 };
 
 export function providerMark(provider) {

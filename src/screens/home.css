@@ -5,11 +5,11 @@
   --r-lg: 14px;
 }
 
-body[data-page="home"] {
+body:has(main[data-page="home"]) {
   --shell: 1216px;
   --home-nav-height: 64px;
 }
-body[data-page="home"] .site-header { position: fixed; inset: 0 0 auto; }
+body:has(main[data-page="home"]) .site-header { position: fixed; inset: 0 0 auto; }
 
 .hero {
   position: relative;
@@ -461,7 +461,7 @@ body[data-page="home"] .site-header { position: fixed; inset: 0 0 auto; }
   .home-provider-strip a { gap: 6px; font-size: 13px; }
 }
 @media (max-width: 730px) {
-  body[data-page="home"] { --home-nav-height: 61px; }
+  body:has(main[data-page="home"]) { --home-nav-height: 61px; }
   .hero-inner { padding-block: 28px 20px; }
   .hero h1 { font-size: clamp(42px, 9vw, 63px); }
   .hero-copy > p { margin-top: 12px; }
