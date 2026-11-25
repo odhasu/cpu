@@ -1,5 +1,5 @@
 {
-  "name": "renderport",
+  "name": "blinkrouter",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -10,5 +10,8 @@
   },
   "devDependencies": {
     "vite": "7.3.8"
+  },
+  "dependencies": {
+    "three": "0.187.0"
   }
 }

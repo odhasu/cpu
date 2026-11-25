@@ -1,4 +1,4 @@
-import brandMark from './assets/renderport-mark.png';
+import brandMark from './assets/blinkrouter-mark.png';
 import { icon, modelUrl, outputIcon, providerMark } from './ui.js';
 
 const nav = [
@@ -15,20 +15,26 @@ function navLinks(page, urls) {
 }
 
 function brand(urls) {
-  return `<a class="site-brand" href="${urls.home}" aria-label="RenderPort home"><img class="brand-mark" src="${brandMark}" alt=""><span>RenderPort</span></a>`;
+  return `<a class="site-brand" href="${urls.home}" aria-label="Blinkrouter home"><img class="brand-mark" src="${brandMark}" alt=""><span>Blinkrouter</span></a>`;
 }
 
 export function header(page, { urls }) {
-  return `<a class="skip-link" href="#main-content">Skip to content</a>
-    <header class="site-header">
-      <div class="site-header-inner shell">
-        ${brand(urls)}
-        <div class="site-tools">
-          <button class="site-search" type="button" data-search aria-label="Search RenderPort">
-            ${icon('search')} <span>Search</span><kbd>${icon('command')} K</kbd>
-          </button>
+  const appleKeyboard = /Mac|iPhone|iPad/.test(navigator.platform);
+  return `<header class="site-header nav">
+      <a class="skip-link" href="#main-content">Skip to content</a>
+      <div class="site-header-inner shell wrap">
+        <div class="site-header-links">
+          ${brand(urls)}
           <nav class="site-nav" aria-label="Main navigation">${navLinks(page, urls)}</nav>
-          <a class="button button--primary header-playground" href="${urls.playground}">Playground</a>
+        </div>
+        <div class="site-tools">
+          <div class="site-search-control">
+            <button class="site-search" type="button" data-search aria-label="Search Blinkrouter" aria-keyshortcuts="Meta+K Control+K" aria-haspopup="dialog" aria-expanded="false">
+              ${icon('search')} <span>Search</span>
+            </button>
+            <kbd aria-hidden="true">${appleKeyboard ? icon('command') : 'Ctrl'} K</kbd>
+          </div>
+          <a class="button header-playground" href="${urls.playground}">Playground ${icon('upRight')}</a>
           <button type="button" class="menu-toggle button" aria-controls="mobile-navigation" aria-expanded="false" aria-label="Open navigation">${icon('menu')}</button>
         </div>
       </div>
@@ -39,15 +45,21 @@ export function header(page, { urls }) {
     </header>`;
 }
 
-export function footer({ urls }) {
-  return `<footer class="site-footer">
-    <div class="shell">
+export function footer({ urls }, page) {
+  return `<footer class="site-footer closing">
+    <div class="shell wrap">
+      ${page === 'home' ? `<div class="site-footer-close">
+        <h2>API playground</h2>
+        <a class="button btn btn--primary button--primary" href="${urls.playground}">Try an API request ${icon('arrow')}</a>
+      </div>` : ''}
+      <div>
       <div class="site-footer-main">
         <div>${brand(urls)}<p>One port for AI models and cloud compute.</p></div>
-        <div class="footer-link-group"><h2>Product</h2>${navLinks('', urls)}</div>
-        <div class="footer-link-group"><h2>Developers</h2><a href="${urls.docs}">API quickstart</a><a href="${urls.playground}">API playground</a><a href="${urls.github}">${icon('github')} GitHub ${icon('upRight')}</a></div>
+        <nav class="footer-link-group" aria-label="Product"><p class="footer-group-title">Product</p>${navLinks('', urls)}</nav>
+        <nav class="footer-link-group" aria-label="Developers"><p class="footer-group-title">Developers</p><a href="${urls.quickstart}">API quickstart</a><a href="${urls.playground}">API playground</a><a href="${urls.github}">${icon('github')} GitHub ${icon('upRight')}</a></nav>
       </div>
-      <div class="site-footer-bottom"><span>© ${new Date().getFullYear()} RenderPort</span><span><i></i> Product preview</span></div>
+      <div class="site-footer-bottom"><span>© ${new Date().getFullYear()} Blinkrouter</span><span><i></i> Product preview</span></div>
+      </div>
     </div>
   </footer>`;
 }
@@ -85,14 +97,22 @@ export function mountChrome(root, { urls, modelCatalog }) {
     menuToggle.innerHTML = icon('close');
   });
 
+  mobileNavigation.addEventListener('click', (event) => {
+    if (event.target.closest('a')) closeMenu();
+  });
+  window.matchMedia('(max-width: 720px)').addEventListener('change', (event) => {
+    if (!event.matches) closeMenu();
+  });
+
   const dialog = root.querySelector('.search-dialog');
+  const searchButton = root.querySelector('[data-search]');
   const input = dialog.querySelector('input');
   const results = dialog.querySelector('.search-results');
   const shortcuts = [
     ['Model catalog', urls.models, 'grid'],
     ['Provider pricing', urls.pricing, 'layers'],
     ['GPU Cloud', urls.gpu, 'cpu'],
-    ['API quickstart', urls.docs, 'code'],
+    ['API quickstart', urls.quickstart, 'code'],
     ['API playground', urls.playground, 'terminal'],
   ];
 
@@ -119,10 +139,12 @@ export function mountChrome(root, { urls, modelCatalog }) {
     input.value = '';
     updateSearch();
     dialog.showModal();
+    searchButton.setAttribute('aria-expanded', 'true');
     input.focus();
   }
 
-  root.querySelector('[data-search]').addEventListener('click', openSearch);
+  searchButton.addEventListener('click', openSearch);
+  dialog.addEventListener('close', () => searchButton.setAttribute('aria-expanded', 'false'));
   dialog.querySelector('.search-close').addEventListener('click', () => dialog.close());
   dialog.addEventListener('click', (event) => {
     if (event.target === dialog || event.target.closest('a')) dialog.close();
@@ -130,6 +152,11 @@ export function mountChrome(root, { urls, modelCatalog }) {
   input.addEventListener('input', updateSearch);
 
   dialog.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      dialog.close();
+      return;
+    }
     const links = [...results.querySelectorAll('a')];
     if (!links.length) return;
     const index = links.indexOf(document.activeElement);
@@ -149,7 +176,7 @@ export function mountChrome(root, { urls, modelCatalog }) {
       event.preventDefault();
       openSearch();
     }
-    if (event.key === 'Escape' && !mobileNavigation.hidden && !dialog.open) {
+    if (event.key === 'Escape' && !event.defaultPrevented && !mobileNavigation.hidden && !dialog.open) {
       closeMenu();
       menuToggle.focus();
     }

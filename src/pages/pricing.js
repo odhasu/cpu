@@ -137,7 +137,7 @@ export function render(context) {
           <a href="${escapeHtml(urls.gpu)}">View GPU pricing <span aria-hidden="true">↗</span></a>
         </div>
 
-        <form class="pricing-calculator">
+        <form class="pricing-calculator" data-reveal>
           <div class="pricing-calculator-fields">
             <label class="pricing-model-field" for="pricing-estimate-model">
               Model

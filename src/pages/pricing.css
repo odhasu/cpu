@@ -3,13 +3,15 @@
   --pricing-rate-line: color-mix(in srgb, var(--accent) 25%, var(--line));
   padding-bottom: clamp(60px, 9vw, 124px);
 }
+.pricing-page .pricing-ledger, .pricing-page .pricing-calculator { box-shadow: 0 18px 55px #0003; }
+.pricing-page .pricing-table-wrap { border-radius: 9px; }
 
 .pricing-hero {
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) minmax(280px, .85fr);
   align-items: center;
   gap: clamp(32px, 7vw, 108px);
-  padding-block: clamp(58px, 9vw, 128px) clamp(68px, 10vw, 136px);
+  padding-block: clamp(48px, 7vw, 102px) clamp(55px, 8vw, 112px);
 }
 
 .pricing-hero h1 {

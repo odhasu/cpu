@@ -1,3 +1,9 @@
+import byteDanceLogo from './assets/bytedance.svg';
+import anthropicLogo from './assets/providers/anthropic.svg';
+import elevenLabsLogo from './assets/providers/elevenlabs.svg';
+import googleLogo from './assets/providers/google.svg';
+import openAiLogo from './assets/providers/openai.svg';
+
 const icons = {
   arrow: '<path d="M5 12h14m-6-6 6 6-6 6"/>',
   upRight: '<path d="M7 17 17 7M7 7h10v10"/>',
@@ -22,6 +28,7 @@ const icons = {
   bell: '<path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9m-8 12a2 2 0 0 0 4 0"/>',
   external: '<path d="M13 4h7v7m0-7-9 9m7 0v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h6"/>',
   pin: '<path d="M12 3a7 7 0 0 1 7 7c0 5.2-7 11-7 11s-7-5.8-7-11a7 7 0 0 1 7-7Z"/><circle cx="12" cy="10" r="2"/>',
+  replay: '<path d="M3 10a9 9 0 1 1 1.8 7.4M3 4v6h6"/>',
   route: '<circle cx="5.5" cy="5.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/><path d="M8 5.5h6a3.5 3.5 0 0 1 0 7H8a3 3 0 0 0 0 6h8"/>',
   github: '<path d="M9 19c-4 1.3-4-2-6-2.5M15 22v-3.4a3 3 0 0 0-.8-2.4c2.7-.3 5.6-1.3 5.6-6A4.7 4.7 0 0 0 18.5 7a4.4 4.4 0 0 0-.1-3.3s-1-.3-3.4 1.3a12 12 0 0 0-6 0C6.6 3.4 5.6 3.7 5.6 3.7A4.4 4.4 0 0 0 5.5 7a4.7 4.7 0 0 0-1.3 3.2c0 4.7 2.9 5.7 5.6 6A3 3 0 0 0 9 18.6V22"/>',
 };
@@ -54,9 +61,19 @@ const providers = {
   MiniMax: ['M', '205 182 255'],
 };
 
+const providerLogos = {
+  Anthropic: anthropicLogo,
+  ByteDance: byteDanceLogo,
+  ElevenLabs: elevenLabsLogo,
+  Google: googleLogo,
+  OpenAI: openAiLogo,
+};
+
 export function providerMark(provider) {
   const [label, color] = providers[provider] ?? [provider.slice(0, 2), '185 185 190'];
-  return `<span class="provider-mark" style="--provider-color: ${color}" aria-hidden="true">${escapeHtml(label)}</span>`;
+  const logo = providerLogos[provider];
+  const mark = logo ? `<img src="${logo}" alt="">` : escapeHtml(label);
+  return `<span class="provider-mark" style="--provider-color: ${color}" aria-hidden="true">${mark}</span>`;
 }
 
 export function modelUrl(urls, id) {

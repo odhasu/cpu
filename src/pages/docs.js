@@ -1,9 +1,8 @@
 import './docs.css';
 import { copyText, icon } from '../ui.js';
+import { quickstart, quickstartLanguages as languages, quickstartModelId as initialModelId, requestFor } from '../data/requests.js';
 
 const examplePath = 'https://gateway.example/v1';
-const initialModelId = 'openai/gpt-6.2-sol';
-const languages = ['cURL', 'JavaScript', 'Python'];
 const samplePrompts = {
   Text: 'Give me three ways to describe a city at sunrise.',
   Image: 'An editorial photograph of a brutalist observatory at first light.',
@@ -15,58 +14,6 @@ function copyButton(className = '') {
   return `<button type="button" class="button button--quiet docs-copy ${className}"><span class="copy-idle">${icon('copy')} Copy</span><span class="copy-done">${icon('check')} Copied</span></button>`;
 }
 
-function quickstart(language) {
-  if (language === 'JavaScript') return `import OpenAI from "openai";
-
-const client = new OpenAI({
-  baseURL: process.env.GATEWAY_URL,
-  apiKey: process.env.GATEWAY_KEY,
-});
-
-const result = await client.chat.completions.create({
-  model: "${initialModelId}",
-  messages: [{ role: "user", content: "Say hello." }],
-});
-console.log(result.choices[0].message.content);`;
-  if (language === 'Python') return `import os
-from openai import OpenAI
-
-client = OpenAI(
-    base_url=os.environ["GATEWAY_URL"],
-    api_key=os.environ["GATEWAY_KEY"],
-)
-
-result = client.chat.completions.create(
-    model="${initialModelId}",
-    messages=[{"role": "user", "content": "Say hello."}],
-)
-print(result.choices[0].message.content)`;
-  return [
-    'curl "$GATEWAY_URL/chat/completions" \\',
-    '  -H "Authorization: Bearer $GATEWAY_KEY" \\',
-    '  -H "Content-Type: application/json" \\',
-    "  -d '{",
-    `    "model": "${initialModelId}",`,
-    '    "messages": [',
-    '      { "role": "user", "content": "Say hello." }',
-    '    ]',
-    "  }'",
-  ].join('\n');
-}
-
-function requestFor(model, prompt, modelId = model.id) {
-  if (model.kind === 'Text') {
-    return { path: '/chat/completions', body: { model: modelId, messages: [{ role: 'user', content: prompt }] } };
-  }
-  if (model.kind === 'Image') {
-    return { path: '/images/generations', body: { model: modelId, prompt } };
-  }
-  if (model.kind === 'Audio' && model.provider !== 'Suno') {
-    return { path: '/audio/speech', body: { model: modelId, input: prompt, voice: 'default' } };
-  }
-  return { path: '/generations', body: { model: modelId, output: model.kind.toLowerCase(), prompt } };
-}
-
 function sampleResult(model) {
   if (model.kind === 'Text') {
     return {
@@ -75,7 +22,7 @@ function sampleResult(model) {
       model: model.id,
       choices: [{
         index: 0,
-        message: { role: 'assistant', content: 'This is an example reply from the RenderPort playground. Connect a gateway to get a model-generated response.' },
+        message: { role: 'assistant', content: 'This is an example reply from the Blinkrouter playground. Connect a gateway to get a model-generated response.' },
         finish_reason: 'stop',
       }],
     };
@@ -112,7 +59,7 @@ export function render({ urls, modelCatalog }) {
   return `<section class="docs-page shell">
     <div class="docs-heading">
       <p>${icon('terminal')} Developer API</p>
-      <h1>Make your <br>first request.</h1>
+      <h1>Make your first request.</h1>
       <p>Build a request, preview the response and connect your own compatible text gateway.</p>
       <div class="docs-heading-actions">
         <a href="#playground" class="button button--primary">Open playground ${icon('arrow')}</a>
@@ -129,7 +76,7 @@ export function render({ urls, modelCatalog }) {
         <section id="quickstart" class="docs-section" aria-labelledby="quickstart-title">
           <h2 id="quickstart-title">Quickstart</h2>
           <p>Set <code>GATEWAY_URL</code> to your gateway’s base URL, such as <code>${examplePath}</code>, and <code>GATEWAY_KEY</code> to your gateway key. Use a model ID supported by your gateway.</p>
-          <div class="docs-code-block">
+          <div class="docs-code-block" data-reveal>
             <div class="docs-code-toolbar">
               <div class="docs-languages" aria-label="Code language">${languages.map((language, index) => `<button type="button" aria-pressed="${index === 0}" data-language="${language}">${language}</button>`).join('')}</div>
               ${copyButton('copy-quickstart')}
