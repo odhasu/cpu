@@ -13,6 +13,7 @@
   padding-block: 14px;
   border-block: 1px solid var(--line);
 }
+.catalog-controls .filter-button[aria-pressed="true"] { border-color: #718b3c; }
 .catalog-inputs {
   display: grid;
   grid-template-columns: minmax(0, 235px) minmax(130px, 160px);
@@ -45,7 +46,7 @@
   color: var(--text);
   border: 1px solid var(--line-strong);
   border-radius: 13px;
-  background: #101719;
+  background: var(--surface-raised);
   box-shadow: 0 22px 90px #000a;
 }
 .model-dialog::backdrop { background: #030306b5; backdrop-filter: blur(3px); }
@@ -60,7 +61,7 @@
   align-items: center;
   gap: 3px;
   padding-left: 12px;
-  background: #080d0f;
+  background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 7px;
 }

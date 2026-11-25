@@ -1,6 +1,6 @@
 .rp-gpu {
   --gpu-rule: var(--line, #20282a);
-  --gpu-panel: #0a1012;
+  --gpu-panel: var(--surface);
   padding-bottom: clamp(64px, 9vw, 124px);
 }
 
@@ -53,7 +53,7 @@
 }
 
 .rp-gpu-hero__estimate {
-  background: #11191a;
+  background: var(--surface-raised);
 }
 
 .rp-gpu-hero__status {
@@ -140,13 +140,13 @@
 }
 
 .rp-gpu-card:hover {
-  border-color: #666771;
-  background: #191a1f;
+  border-color: #626f71;
+  background: var(--surface-raised);
 }
 
 .rp-gpu-card[aria-pressed='true'] {
   border-color: #718b3c;
-  background: #172016;
+  background: var(--accent-fill);
 }
 
 .rp-gpu-card__name {
@@ -256,15 +256,15 @@
   width: 100%;
   min-height: 46px;
   padding: 8px 11px;
-  border: 1px solid #61636d;
+  border: 1px solid #626f71;
   border-radius: 3px;
-  background: #080d0f;
+  background: var(--background);
   color: var(--text);
   font-size: 16px;
 }
 
 .rp-gpu-config__field :is(input, select):hover {
-  border-color: #83858f;
+  border-color: #7b8889;
 }
 
 .rp-gpu-config__field input[aria-invalid='true'] {
@@ -316,9 +316,9 @@
 }
 
 .rp-gpu-config__download:disabled {
-  border-color: #414b3d;
-  background: #20291f;
-  color: #a8b1a4;
+  border-color: var(--line-strong);
+  background: var(--surface-raised);
+  color: var(--muted);
 }
 
 .rp-gpu-config__feedback {
